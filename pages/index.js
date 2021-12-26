@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
-import { getProfile } from "../lib/config";
+import { getProfile, getName } from "../lib/config";
 import * as fcl from "@onflow/fcl";
 
 export const sendVerification = async (name, magicString, signature) => {
@@ -76,6 +76,16 @@ export default function Home() {
           >
             Get my Profile
           </button>
+          <button
+            onClick={async () => {
+              await fcl.authenticate();
+              let currentUser = await fcl.currentUser().snapshot();
+              let c = await getName(currentUser.addr);
+              console.log("default name:", c);
+            }}
+          >
+            Get my FIND name
+          </button>
         </div>
 
         <div styles={{ display: "flex" }}>
@@ -86,9 +96,12 @@ export default function Home() {
               let c = await getProfile(currentUser);
               console.log("getProfile", c);
 
+              // For now, we can only sign in as the default name
+              let loginAs = c.findName;
+
               // First, we fetch the magic string to sign
               let { toSign, name, magicString } = await fetch(
-                `/api/auth/flow?name=${c.findName}`
+                `/api/auth/flow?name=${loginAs}`
               ).then((x) => x.json());
               let signature = await signMessage(toSign);
 

@@ -5,6 +5,7 @@ import {
   userJWT,
   verifySignatures,
 } from "../../../lib/authentication";
+import { getProfileFromFind } from "../../../lib/config";
 
 export default async function handler(req, res) {
   if (req.method === "POST") {
@@ -15,8 +16,8 @@ export default async function handler(req, res) {
     if (valid) {
       console.log(`Successfully signed in as ${name}...`);
       const token = userJWT(name);
-
-      res.status(200).json({ token, loggedIn: name });
+      const c = await getProfileFromFind(name);
+      res.status(200).json({ token, loggedIn: name, profile: c });
     } else {
       res.status(200).json({ error: "Oops! We can't log you in" });
     }
