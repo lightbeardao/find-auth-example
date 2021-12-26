@@ -4,6 +4,28 @@ import styles from "../styles/Home.module.css";
 import { getProfile } from "../lib/config";
 import * as fcl from "@onflow/fcl";
 
+export const sendVerification = async (name, magicString, signature) => {
+  return fetch("/api/auth/flow", {
+    method: "POST",
+    body: JSON.stringify({
+      name: name,
+      magicString: magicString,
+      signatures: signature,
+    }),
+  })
+    .then((response) => response.json())
+    .catch((e) => console.error("Error:", e));
+};
+
+export const signMessage = async (message) => {
+  const MSG = Buffer.from(message).toString("hex");
+  try {
+    return await fcl.currentUser().signUserMessage(MSG);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 export default function Home() {
   return (
     <div className={styles.container}>
@@ -53,6 +75,36 @@ export default function Home() {
             }}
           >
             Get my Profile
+          </button>
+        </div>
+
+        <div styles={{ display: "flex" }}>
+          <button
+            onClick={async () => {
+              await fcl.authenticate();
+              let currentUser = await fcl.currentUser().snapshot();
+              let c = await getProfile(currentUser);
+              console.log("getProfile", c);
+
+              // First, we fetch the magic string to sign
+              let { toSign, name, magicString } = await fetch(
+                `/api/auth/flow?name=${c.findName}`
+              ).then((x) => x.json());
+              let signature = await signMessage(toSign);
+
+              console.log("toSign", toSign);
+              console.log("signed", signature);
+
+              // Then, we post the response to the endpoint
+              const result = await sendVerification(
+                name,
+                magicString,
+                signature
+              );
+              console.log("Result", result);
+            }}
+          >
+            Sign in with Profile
           </button>
         </div>
       </main>
