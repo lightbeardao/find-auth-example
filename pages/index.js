@@ -3,6 +3,8 @@ import cookieCutter from "cookie-cutter";
 import Head from "next/head";
 import { Button, ButtonGroup } from "../components";
 import { getName, getProfile } from "../lib/config";
+import { useState } from "react";
+import ProfileDisplay from "../components/ProfileDisplay";
 
 export function setCookie(key, value) {
   // set cookie
@@ -37,6 +39,9 @@ export const signMessage = async (message) => {
 };
 
 export default function Home() {
+  const [profile, setProfile] = useState(null);
+  const [localProfile, setLocalProfile] = useState(null);
+
   return (
     <div className="border min-h-full bg-gray-50">
       <Head>
@@ -51,25 +56,8 @@ export default function Home() {
         <p className="text-xl">
           Open the Console to see messages! (<kbd>F12</kbd>)
         </p>
-        <ButtonGroup name="Log in">
-          <Button
-            onClick={async () => {
-              let c = await fcl.authenticate();
-              console.log("Authenticated", c);
-            }}
-          >
-            Log in
-          </Button>
-
-          <Button
-            onClick={async () => {
-              let c = await fcl.unauthenticate();
-              console.log("Logged out", c);
-            }}
-          >
-            Log out
-          </Button>
-
+        <ButtonGroup name="Stuff anyone can do (dApp)">
+          <ProfileDisplay profile={localProfile} />
           <Button
             onClick={async () => {
               await fcl.authenticate();
@@ -77,6 +65,7 @@ export default function Home() {
               console.log("The Current User", currentUser);
 
               let c = await getProfile(currentUser);
+              setLocalProfile(c);
               console.log("getProfile", c);
             }}
           >
@@ -94,7 +83,8 @@ export default function Home() {
           </Button>
         </ButtonGroup>
 
-        <ButtonGroup name="Find Login">
+        <ButtonGroup name="Sign In (to YourApp)">
+          <ProfileDisplay profile={profile} />
           <Button
             onClick={async () => {
               await fcl.authenticate();
@@ -124,6 +114,7 @@ export default function Home() {
 
               // if successful, set a cookie!
               if (result.loggedIn) {
+                setProfile(result.profile);
                 setCookie("authToken", result.token);
               }
             }}
@@ -157,6 +148,7 @@ export default function Home() {
             onClick={async () => {
               deleteCookie("authToken");
               console.log("No longer logged in!");
+              setProfile(null);
             }}
           >
             Sign out with Profile
@@ -171,7 +163,7 @@ export default function Home() {
           rel="noopener noreferrer"
           className="border bg-green-100 p-2 px-4"
         >
-          FIND yourself a treat
+          FIND a treat
         </a>
       </footer>
     </div>

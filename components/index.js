@@ -13,7 +13,7 @@ export function ButtonGroup({ children, name }) {
   return (
     <div className="flex flex-col gap-4 p-4 rounded-xl bg-white border">
       <p className="text-gray-500 font-medium">{name}</p>
-      <div className="flex gap-4">{children}</div>
+      <div className="flex gap-4 items-start">{children}</div>
     </div>
   );
 }
