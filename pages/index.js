@@ -3,6 +3,17 @@ import Image from "next/image";
 import styles from "../styles/Home.module.css";
 import { getProfile, getName } from "../lib/config";
 import * as fcl from "@onflow/fcl";
+import cookieCutter from "cookie-cutter";
+
+export function setCookie(key, value) {
+  // set cookie
+  cookieCutter.set(key, value);
+}
+
+export function deleteCookie(key) {
+  // Delete a cookie
+  cookieCutter.set(key, "", { expires: new Date(0) });
+}
 
 export const sendVerification = async (name, magicString, signature) => {
   return fetch("/api/auth/flow", {
@@ -88,7 +99,26 @@ export default function Home() {
           </button>
         </div>
 
-        <div styles={{ display: "flex" }}>
+        <div styles={{ display: "flex", marginTop: "2em" }}>
+          <button
+            onClick={async () => {
+              const token = cookieCutter.get("authToken");
+              console.log("Cookie:", token);
+
+              let result = await fetch("/api/sample-auth", {
+                headers: {
+                  Authorization: token,
+                },
+              })
+                .then((x) => x.json())
+                .catch((e) => {
+                  console.error(e);
+                });
+              console.log("Server says", result);
+            }}
+          >
+            Make authenticated request
+          </button>
           <button
             onClick={async () => {
               await fcl.authenticate();
@@ -115,9 +145,25 @@ export default function Home() {
                 signature
               );
               console.log("Result", result);
+
+              // if successful, set a cookie!
+              if (result.loggedIn) {
+                setCookie("authToken", result.token);
+              }
             }}
           >
             Sign in with Profile
+          </button>
+        </div>
+
+        <div styles={{ display: "flex", marginTop: "2em" }}>
+          <button
+            onClick={async () => {
+              deleteCookie("authToken");
+              console.log("No longer logged in!");
+            }}
+          >
+            Sign out with Profile
           </button>
         </div>
       </main>

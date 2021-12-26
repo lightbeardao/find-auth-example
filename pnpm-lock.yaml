@@ -3,6 +3,7 @@ lockfileVersion: 5.3
 specifiers:
   '@onflow/fcl': ^0.0.77
   '@onflow/types': ^0.0.6
+  cookie-cutter: ^0.2.0
   eslint: 8.5.0
   eslint-config-next: 12.0.7
   jsonwebtoken: ^8.5.1
@@ -13,6 +14,7 @@ specifiers:
 dependencies:
   '@onflow/fcl': 0.0.77
   '@onflow/types': 0.0.6
+  cookie-cutter: 0.2.0
   jsonwebtoken: 8.5.1
   next: 12.0.7_react-dom@17.0.2+react@17.0.2
   react: 17.0.2
@@ -873,6 +875,10 @@ packages:
     resolution: {integrity: sha512-4FJkXzKXEDB1snCFZlLP4gpC3JILicCpGbzG9f9G7tGqGCzETQ2hWPrcinA9oU4wtf2biUaEH5065UnMeR33oA==}
     dependencies:
       safe-buffer: 5.1.2
+    dev: false
+
+  /cookie-cutter/0.2.0:
+    resolution: {integrity: sha1-WYj1mLaMBgoA7IUkrW5qoZPnIkQ=}
     dev: false
 
   /core-js-pure/3.20.1:
